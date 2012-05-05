@@ -2,6 +2,10 @@
 <head>
 <title>Road trippin'</title>
 <script src="static/js/soundmanager2/soundmanager2.js"></script>
+<!-- TODO - that's my localhost API key. won't work IRL. -->
+<script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBTKFR7VhF-m_ypFaxLA7VSzwGOWfmfnng&sensor=false">
+    </script>
 <script>
 // waiting until doc.ready causes sm2 to barf :-\
 soundManager.url = '/roadtrip/static/swf/soundmanager2/';
@@ -33,16 +37,26 @@ $(document).ready(function() {
 
     RT.prototype._onPlay = function() {
         this._sound.play();
-        this._status.text('Playing');
+        this._status.text('playing');
     };
 
     RT.prototype._onPause = function() {
         this._sound.pause();
-        this._status.text('Paused');
+        this._status.text('paused');
     };
 
 Roadtrippin = new RT();
 Roadtrippin.init(document); // maybe we can unit test this a bit, just to try it
+
+// here's the coords to a cool spot: 
+// http://maps.google.com/maps?q=36.270357,-121.808027&ll=36.347071,-121.895199&spn=0.036363,0.114498&num=1&t=m&z=13&layer=c&cbll=36.347009,-121.895185&panoid=bnkGz9RA5J6D8cGsq30JaQ&cbp=11,229.13,,0,4.05
+
+var hiwayOne = new google.maps.LatLng(36.347071,-121.895199);
+var awYeah = new google.maps.StreetViewPanorama($('.pano'), { position: hiwayOne });
+
+
+
+
 
 });
 </script>
@@ -51,5 +65,6 @@ Roadtrippin.init(document); // maybe we can unit test this a bit, just to try it
 <div class="player" style="height:20px; width:200px; border: 1px solid black">Status: <span class="status">stopped</span></div>
 <div class="play" style="height: 20px; width:20px; border: 1px solid black">play</div>
 <div class="pause" style="height: 20px; width:20px; border: 1px solid black">pause</div>
+<div class="pano" style="height: 300px; width: 300px;">here come the warm jets...</div>
 </body>
 </html>

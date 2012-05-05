@@ -1,0 +1,55 @@
+<!doctype html>
+<head>
+<title>Road trippin'</title>
+<script src="static/js/soundmanager2/soundmanager2.js"></script>
+<script>
+// waiting until doc.ready causes sm2 to barf :-\
+soundManager.url = '/roadtrip/static/swf/soundmanager2/';
+soundManager.flashVersion = 9;
+soundManager.useFlashBlock = false;
+soundManager.preferFlash = false;
+</script>
+<script src="static/js/jquery-1.7.2.js"></script>
+<script src="static/js/underscore.js"></script>
+<script>
+
+$(document).ready(function() {
+    function RT() {};
+    RT.prototype.init = function(doc) {
+        // todo - use a deferred to chain up all the stuff
+        // todo fetch setList dynamically
+        soundManager.onready(_.bind(RT.prototype._onSoundManagerReady, this));
+        $(doc).on('click', '.play', _.bind(RT.prototype._onPlay, this));
+        $(doc).on('click', '.pause', _.bind(RT.prototype._onPause, this));
+        this._status = $('.status');
+    };
+
+    RT.prototype._onSoundManagerReady = function() {
+        this._sound = soundManager.createSound({
+            id: 'wutwut',
+            url: 'static/mp3/cheesy.mp3'
+        });
+    };
+
+    RT.prototype._onPlay = function() {
+        this._sound.play();
+        this._status.text('Playing');
+    };
+
+    RT.prototype._onPause = function() {
+        this._sound.pause();
+        this._status.text('Paused');
+    };
+
+Roadtrippin = new RT();
+Roadtrippin.init(document); // maybe we can unit test this a bit, just to try it
+
+});
+</script>
+</head>
+<body>
+<div class="player" style="height:20px; width:200px; border: 1px solid black">Status: <span class="status">stopped</span></div>
+<div class="play" style="height: 20px; width:20px; border: 1px solid black">play</div>
+<div class="pause" style="height: 20px; width:20px; border: 1px solid black">pause</div>
+</body>
+</html>

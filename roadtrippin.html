@@ -22,10 +22,33 @@ $(document).ready(function() {
     RT.prototype.init = function(doc) {
         // todo - use a deferred to chain up all the stuff
         // todo fetch setList dynamically
+        RT.prototype._initSound(doc);
+        RT.prototype._initImages(doc);
+    };
+
+    RT.prototype._initSound = function(doc) {
         soundManager.onready(_.bind(RT.prototype._onSoundManagerReady, this));
         $(doc).on('click', '.play', _.bind(RT.prototype._onPlay, this));
         $(doc).on('click', '.pause', _.bind(RT.prototype._onPause, this));
         this._status = $('.status');
+    };
+
+    RT.prototype._initImages = function(doc) {
+        hiwayOne = new google.maps.LatLng(36.347071,-121.895199);
+        this._pano = new google.maps.StreetViewPanorama($('.pano')[0], { 
+            position: hiwayOne, 
+            pov: {
+                heading: 270, /* degrees relative to true north. 270 is west, into the ocean. */
+                zoom: 0,
+                pitch: 0
+            },
+            addressControl: false, /* don't show address */
+            panControl: false, /* don't show 4-way pan wheel */
+            zoomControl: false, /* don't show the +/- zoom toggle */
+            linksControl: false /* hoping it removes those bracket nav things */
+        });
+        $(doc).on('click', '.image-play', _.bind(RT.prototype._onStartPano, this));
+        $(doc).on('click', '.image-pause', _.bind(RT.prototype._onStopPano, this));
     };
 
     RT.prototype._onSoundManagerReady = function() {
@@ -45,19 +68,20 @@ $(document).ready(function() {
         this._status.text('paused');
     };
 
+    RT.prototype._onStartPano = function() {
+        this._panoTimer = setInterval(_.bind(function() {
+            next = this._pano.getLinks()[0].pano;
+            this._pano.setPano(next);
+        }, this), 1000);
+    };
+
+    RT.prototype._onStopPano = function() {
+        clearInterval(this._panoTimer);
+    };
+
+
 Roadtrippin = new RT();
 Roadtrippin.init(document); // maybe we can unit test this a bit, just to try it
-
-// here's the coords to a cool spot: 
-// http://maps.google.com/maps?q=36.270357,-121.808027&ll=36.347071,-121.895199&spn=0.036363,0.114498&num=1&t=m&z=13&layer=c&cbll=36.347009,-121.895185&panoid=bnkGz9RA5J6D8cGsq30JaQ&cbp=11,229.13,,0,4.05
-
-var hiwayOne = new google.maps.LatLng(36.347071,-121.895199);
-var awYeah = new google.maps.StreetViewPanorama($('.pano'), { position: hiwayOne });
-
-
-
-
-
 });
 </script>
 </head>
@@ -65,6 +89,8 @@ var awYeah = new google.maps.StreetViewPanorama($('.pano'), { position: hiwayOne
 <div class="player" style="height:20px; width:200px; border: 1px solid black">Status: <span class="status">stopped</span></div>
 <div class="play" style="height: 20px; width:20px; border: 1px solid black">play</div>
 <div class="pause" style="height: 20px; width:20px; border: 1px solid black">pause</div>
-<div class="pano" style="height: 300px; width: 300px;">here come the warm jets...</div>
+<div class="pano" style="height: 600px; width: 1000px;">here come the warm jets...</div>
+<div class="image-play" style="height: 20px; border: 1px solid black">move map</div>
+<div class="image-pause" style="height: 20px;border: 1px solid black">stop</div>
 </body>
 </html>
